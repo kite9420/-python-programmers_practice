@@ -1,6 +1,7 @@
 # 2026/04/25
 # 2025 카카오 하반기 1차 levl1 중요한 단어를 스포 방지
 # 문제 링크 : https://school.programmers.co.kr/learn/courses/30/lessons/468370
+
 def solution(message, spoiler_ranges):
     words = []
     spoiler_words = []
