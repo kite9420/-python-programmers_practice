@@ -20,4 +20,3 @@ def solution(sequence, k):
             if best is None or length < best[0]:
                 best = (length, left, right)
     return [best[1],best[2]]
-        
