@@ -37,7 +37,7 @@ def fib(n):
 
 2) Top-down 방식 (메모이제이션)
 def fib(n, memo = {}):
-    if n <= 1
+    if n <= 1:
         return n
     if n in memo:
         return memo[n]
