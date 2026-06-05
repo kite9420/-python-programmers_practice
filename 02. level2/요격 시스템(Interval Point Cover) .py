@@ -1,5 +1,5 @@
 #2026/06/06
-#요격 시스템 연습문제
+#요격 시스템 연습문제 ->  Interval Point Cover 문제 -> 최소 개수의 점으로 모든 구간 찌르기
 #문제 링크 : https://school.programmers.co.kr/learn/courses/30/lessons/181188
 
 def solution(targets):
