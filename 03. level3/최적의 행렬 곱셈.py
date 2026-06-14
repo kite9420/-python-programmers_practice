@@ -24,3 +24,20 @@ def solution(matrix_sizes):
         return total_cost
     return cost(1,len(matrix_sizes))
     
+''' 반복문 형태
+def solution(matrix_sizes):
+    indexed = [matrix_sizes[0][0]] + [b for a,b in matrix_sizes]
+    n = len(matrix_sizes)
+    
+    cost = [[0]*(n+1) for _ in range(n+1)]
+
+    for length in range(2, n+1):
+        for i in range(1, n- length +2):
+            j = i + length-1
+            cost[i][j] = float("inf")
+            for k in range(i,j):
+                cur = cost(i, k) + cost(k+1, j) + indexed[i-1]*indexed[k]*indexed[j]
+                if cur < cost[i][j]:
+                    cost[i][j] = cur
+    return cost[1][n]
+'''
