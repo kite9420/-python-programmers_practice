@@ -248,3 +248,45 @@ union(parent, 3, 4)
 print(find(parent, 0) == find(parent, 2))   # True  → 같은 무리
 print(find(parent, 0) == find(parent, 4))   # False → 다른 무리
 
+#11 위상정렬 -> 독립 시행과 종속 시행이 섞여 있을 때 어떤 순서로 처리해야하는지 푸는 문제
+from collections import deque
+
+
+# 문제: 5개 작업(0~4)이 있고, 선후관계가 주어진다.
+#       모든 선후관계를 어기지 않는 작업 처리 순서를 구하라.
+#
+# 선후관계 (a, b) = "a를 먼저 해야 b를 할 수 있다"
+#   0 → 2   (0 끝나야 2 가능)
+#   1 → 2
+#   2 → 3
+#   2 → 4
+#
+# 그림:
+#   0 ─┐
+#      ├→ 2 ─┬→ 3
+#   1 ─┘     └→ 4
+
+edges = [(0, 2), (1, 2), (2, 3), (2, 4)]
+
+def topo_sort(n, edges):
+    graph = [[] for _ in range(n)] # graph[a] = a 다음에 할 수 있는 것들
+    # graph = [[2], [2], [3,4], [], []]   # graph[0]=[2], graph[1]=[2], graph[2]=[3,4] ...
+    indegree = [0] * n   # 각 노드로 들어오는 화살표 수 (= 노드로 들어오기 전에 끝내야하는 작업의 수 : 0개 지금당장 가능, n개 : 기다려야함)
+
+    for a,b in edges:
+        graph[a].append(b)
+        indegree[b] += 1 #indegree = [0, 0, 2, 1, 1]          # 0번부터 4번
+
+    
+    # 진입차수 0인 것(=선행조건 없는 것)부터 시작
+    q = deque([i for i in range(n) if indegree[i]== 0])
+    order = []
+
+    while q:
+        u = q.popleft()
+        order.append(u)
+        for v in graph[u]:
+            indegree[v] -= 1 #graph[0]=[2] → v=2 ->  indegree[2] -= 1   #2→1 , # graph[1]=[2] → v=2 -> indegree[2] -= 1   # 1→0 이제 처리가 가능하므로 큐에 넣음
+            if indegree[v] == 0:
+                q.append(v) #처리가 가능해지면 대기열에
+    return order
