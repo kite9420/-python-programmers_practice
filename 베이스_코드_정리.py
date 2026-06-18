@@ -98,3 +98,153 @@ def parametric_search(lo, hi, check):
         else:
             lo = mid + 1
     return lo
+
+
+#6 DP 탑다운(Memo)
+
+import sys
+sys.setrecursionlimit(10**6)  #재귀 반복호출 한계설정
+
+memo = {}
+def fib(n):
+    if n < 2: #base에 도착했을 때 반환 설정
+        return n
+    if n in memo:
+        return memo[n]
+    memo[n] = fib(n-1) + fib(n-2)  #필요한 하위 문제를 알아서 끝까지 파고 들어가서, 바닥(base case)에 닿으면 거기서부터 값을 들고 거슬러 올라온다
+    return memo[n]
+
+
+#7 DP Bottom-up (Tabulization)
+def fib(n):
+    if n < 2:
+        return n
+    dp = [0] *  (n+1)
+    dp[0], dp[1] = 0, 1 #dp 초기화
+    for i in range(n+1):
+        dp[i] = dp[i-1] + dp[i-2]  #아래에서부터 채우며 올라가기
+    return dp[n]
+
+#8 BFS (너비 우선 탐색) : 넓게 퍼져나가며 트리를 단계별로 탐색
+from collections import deque
+
+def bfs(graph: dict[int, list[int]], start: int) -> list[int]:
+    visited:set[int] = {start} #방문한 노드 집합 {}안에 start 값이 있으므로 set형태    q = deque([start])
+    order = []
+    q = deque([start])
+
+    while q:
+        u = q.popleft()
+        order.append(u)
+        for v in graph[u]:
+            if v not in visited:
+                visited.add(v)
+                q.append(v)
+
+    return order #order에는 방문한 노드들이 가까운 순서별로 정렬됨 FIFO
+
+#DFS (깊이 우선 탐색)
+def dfs(graph, start, visited):
+    visited[start] = True
+    for v in graph[start]:
+        if not visited[v]:
+            dfs(graph, v, visited)
+
+# 스택 버전 (재귀가 너무 깊어서 안정성이 떨어질 때)
+def dfs_stack(graph, start):
+    visited = [False] * len(graph)
+    stack = [start]
+    while stack:
+        u = stack.pop()             # 스택은 뒤에서 꺼냄 (나중에 들어간게 먼저 처리됨)
+        if visited[u]:
+            continue
+        visited[u] = True
+        for v in graph[u]:
+            if not visited[v]:
+                stack.append(v)
+
+#9 격자(2D) 탐색 - 상하좌우 이동 -> BFS 버전
+
+from collections import deque
+def grid_bfs(grid: list[list[int]], sr, sc):
+    R, C = len(grid), len(grid[0])
+    visited = [[False]*C for _ in range(R)]
+    dr = [-1,1,0,0] #상하, 행 변화
+    dc = [0,0,-1,1] #좌우, 열 변화
+    q = deque([(sr,sc)])
+    visited[sr][sc] = True
+    while q:
+        r, c = q.popleft()
+        for i in range(4): #대각선 이동이 없는 사분이동
+            nr, nc = r + dr[i], c + dc[i]
+            if 0<= nr < R and 0 <= nc <C and not visited[nr][nc]:
+                visited[nr][nc] = True
+                q.append((nr,nc))
+
+#아래는 예제 풀어본 것
+'''
+problem : 1은 땅, 0은 바다인 2차원 격자가 주어진다. 상하좌우로 연결된 땅 덩어리 하나를 "섬"이라고 한다. 격자에 섬이 몇 개 있는지 세어라. (대각선은 연결로 치지 않는다.)
+
+입력 격자:
+1 1 0 0 0
+1 1 0 0 0
+0 0 1 0 0
+0 0 0 1 1
+
+grid = [[1,1,0,0,0],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,1,1]]
+''' 
+
+from collections import deque
+def count_islands(grid: list[list[int]]):
+    R, C = len(grid), len(grid[0])
+    visited = [[False]*C for _ in range(R)]
+    dr = [-1,1,0,0] #상하, 행 변화
+    dc = [0,0,-1,1] #좌우, 열 변화
+    count = 0
+
+    def bfs(sr,sc):
+        q = deque([(sr,sc)])
+        visited[sr][sc] = True
+        while q:
+            r, c = q.popleft()
+            for i in range(4): #대각선 이동이 없는 사분이동
+                nr, nc = r + dr[i], c + dc[i]
+                if 0<= nr < R and 0 <= nc <C and not visited[nr][nc]:
+                    if grid[nr][nc] == 1:
+                        visited[nr][nc] = True
+                        q.append((nr,nc))
+    for i in range(R):
+        for j in range(C):
+            if grid[i][j] == 1 and not visited[i][j]:
+                bfs(i,j)
+                count += 1
+    return count
+
+#10 Union-Find  ~끼리 같은 그룹에 속하는지를 빠르게 답하는 자료 구조
+#parent (n번 인덱스의 부모가 누구인지)
+def find(parent : list[int], x):
+    if parent[x] != x:
+        parent[x] = find(parent, parent[x])
+    return parent[x]
+
+def union(parent, a, b): #두 수 a,b 사이에 연결을 만듬
+    ra, rb = find(parent, a), find(parent, b)
+    if ra != rb:  #다른 그룹이면
+        parent[ra] = rb #합침
+
+#예제 문제
+# 문제: 학생 5명(0~4번)이 있다. 아래 친구 관계가 주어진다.
+#       0-1 친구, 1-2 친구, 3-4 친구
+#       (0,1,2)는 한 무리, (3,4)는 다른 무리.
+#       질문: 0번과 2번은 같은 무리인가? 0번과 4번은 같은 무리인가?
+
+n = 5
+parent = [i for i in range(n)]
+
+union(parent, 0, 1)
+union(parent, 1, 2)
+union(parent, 3, 4)
+
+print(find(parent, 0) == find(parent, 2))   # True  → 같은 무리
+print(find(parent, 0) == find(parent, 4))   # False → 다른 무리
+
