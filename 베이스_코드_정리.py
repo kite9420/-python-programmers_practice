@@ -290,3 +290,84 @@ def topo_sort(n, edges):
             if indegree[v] == 0:
                 q.append(v) #처리가 가능해지면 대기열에
     return order
+
+#12. 투포인터
+#이중 for문(O(n²))으로 풀어야 하는 문제를 한 번 훑기(O(n))로 줄이기위해 사용
+#단 배열은 크기 순으로 정렬된 배열 -> 합이 크면 줄이고, 합이 작으면 늘리기
+def two_pointer(arr,target): 
+    lo, hi = 0, len(arr) - 1
+    while lo < hi:
+        s = arr[lo] + arr[hi]
+        if s == target:
+            return (lo, hi)
+        elif s < target:
+            lo += 1
+        else:
+            hi -= 1
+    return None
+
+#예제
+'''
+# 문제: 배열에서 두 수를 골라 합이 target인 쌍을 찾아라.
+arr = [1, 3, 5, 7, 9, 11]
+target = 10
+
+def find_pair_brute(arr, target):
+    n = len(arr)
+    result = []
+    for i in range(n): 
+        for j in range(i + 1, n):
+            if arr[i] + arr[j] == target:
+                result.append((i, j))           # 찾으면 바로 반환
+    return None                         # 다 봐도 없으면 None
+
+print(find_pair_brute(arr, 10))   # (0, 4) → 1 + 9 = 10
+
+'''
+def find_all_pairs_tp(arr, target):
+    lo, hi = 0, len(arr) - 1 #인덱스
+    result = []
+    while lo < hi:
+        total = arr[lo] + arr[hi]
+        if total == target:
+            result.append((lo, hi))
+            lo += 1                     # 찾았어도 멈추지 않고
+            hi -= 1                     # 양쪽 다 좁혀서 계속 탐색
+        elif total < target:
+            lo += 1
+        else:
+            hi -= 1
+    return result
+
+print(find_all_pairs_tp(arr, 12))
+# [(0, 5), (1, 4), (2, 3)]
+
+#13. 슬라이딩 윈도우 (고정크기)
+def sliding_window(arr, k): #길이 k 구간의 최대합
+    window = sum(arr[:k]) #첫 윈도우
+    best = window
+    for i in range(k, len[arr]):
+        window += arr[i] - arr[i-k]
+        best = max(best,window)
+    return best
+
+#14. 슬라이딩 윈도우(가변크기)
+def min_len_subarray(arr, S):
+    # 합이 S 이상인 가장 짧은 구간의 길이
+    lo = 0
+    window = 0
+    best = float('inf')
+    for hi in range(len(arr)):
+        window += arr[hi]          # 오른쪽 끝을 늘림
+        while window >= S:         # 조건 만족하면 왼쪽을 줄여봄
+            best = min(best, hi - lo + 1)
+            window -= arr[lo]
+            lo += 1                # 왼쪽 끝을 좁힘
+    return best if best != float('inf') else 0
+
+#15. 누적합(구간합)
+def prefix_sum(arr):
+    P = [0] * (len(arr) + 1)
+    for i in range(len(arr)):
+        P[i+1] = P[i] + arr[i]     # P[i] = arr[0..i-1]의 합
+    return P
