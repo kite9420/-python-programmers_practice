@@ -43,11 +43,6 @@
 반복 3:    a=이전 b,  b=(a+b)%m   (이후 계속)
 '''
 
-def solution(n):
-    a, b  = 1, 1
-    for _ in range(n-2):
-        a, b = b, (a+b) % 1234567
-    return b
 
 '''기존 코드
 def solution(n):
